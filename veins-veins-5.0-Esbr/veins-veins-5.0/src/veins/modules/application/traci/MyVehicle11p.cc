@@ -47,7 +47,12 @@ void MyVehicle11p::initialize(int stage)
         indexOfAccidentNode = par("indexOfAccidentNode").intValue();
         counterThreshold = par("counterThreshold").intValue();
         arrivalSignal = registerSignal("arrival");
+
+        beaconReceivedSignal = registerSignal("beaconReceivedSignal");
+        warningReceivedSignal = registerSignal("warningReceivedSignal");
         contador=0;
+        counterBeaconReceived=0;
+        counterWarningReceived=0;
         WATCH(contador);
 
 
@@ -71,7 +76,8 @@ void MyVehicle11p::onBSM(DemoSafetyMessage* bsm)
 
     // Your application has received a beacon message from another car or RSU
     // code for handling the message goes here
-
+    counterBeaconReceived++;
+    emit(beaconReceivedSignal, counterBeaconReceived);
 
      int b=int(wsmBeacon->getPsid());
         double dsr=wsmBeacon->getSenderPos().distance(curPosition);
@@ -80,7 +86,6 @@ void MyVehicle11p::onBSM(DemoSafetyMessage* bsm)
         if (ListBeacon.SearchBeacon(b)){
                 ListBeacon.UpdateBeacon(wsmBeacon->getPsid(),wsmBeacon->getArrivalTime(), wsmBeacon->getCreationTime(), wsmBeacon->getPsid(),sqrt(wsmBeacon->getSenderSpeed().squareLength()), wsmBeacon->getSenderPos().x,
                         wsmBeacon->getSenderPos().y, wsmBeacon->getSenderPos().z, 0,wsmBeacon->getSenderPos().distance(curPosition), 0,0, 0);
-
         }
 
         else{
@@ -108,6 +113,9 @@ void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
     // add the new message to storage
     contador++;
     emit(arrivalSignal, contador);
+
+    counterWarningReceived++;
+    emit(warningReceivedSignal, counterWarningReceived);
 
        findHost()->getDisplayString().setTagArg("i", 1, "blue");
 

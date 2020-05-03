@@ -58,6 +58,8 @@ public:
 
 protected:
     int contador;
+    int counterBeaconReceived;
+    int counterWarningReceived;
     BeaconList ListBeacon;
 
     simtime_t lastDroveAt;
@@ -67,6 +69,9 @@ protected:
     int currentSubscribedServiceId;
     long counterThreshold;
     simsignal_t arrivalSignal;
+    simsignal_t beaconReceivedSignal;
+    simsignal_t warningReceivedSignal;
+
     map<long,TraCIDemo11pMessages> receivedMessages;    // treeId, onWSM vector
 
 

@@ -8,7 +8,6 @@
 #include "veins/modules/application/traci/beacon.h"
 #include <iomanip>
 #include <string>
-
 using namespace std;
 
 BeaconList::BeaconList(){
@@ -21,9 +20,6 @@ BeaconList::BeaconList(){
 void BeaconList::AddBeacon(int b_idMsg, simtime_t b_time, simtime_t b_timeRx, int b_idVehicle,double b_s, double b_pX, double b_pY, double b_pZ,
             double b_disJunction, double b_disToSource,simtime_t b_idleTime, double b_abe, double b_angle){
     beaconPtr n = new beacon;
-    string txt;
-    txt=to_string(b_idMsg)+to_string(b_idVehicle)+to_string(b_s) +to_string(b_pX)+to_string(b_pY)+to_string(b_pZ)+to_string(b_disJunction)+to_string(b_disToSource)+to_string(b_abe)+to_string(b_angle);
-    n->source_hash=hash<string>{}(txt);
     n->next =NULL;
     n->idMsg=b_idMsg;
     n->time=b_time;
@@ -38,7 +34,7 @@ void BeaconList::AddBeacon(int b_idMsg, simtime_t b_time, simtime_t b_timeRx, in
     n->idleTime=b_idleTime;
     n->abe=b_abe;
     n->angle=b_angle;
-    n->hash=n->source_hash;
+
 
 
     if(head != NULL){
@@ -87,15 +83,15 @@ void BeaconList::PrintBeacons(){
     EV<<"----------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
     EV<<setw(40)<<"Neighbor Table"<<endl;
     EV<<"----------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
-    EV<<"Original Hash"<<setw(20)<<"ArrivalTime"<<setw(20)<<"Id_Vehicle"<<setw(15)<<"Speed"<<setw(15)<<"CoordX"<<setw(15)<<"CoordY"<<setw(15)<<"Distance"<<setw(25)<<"idleTime"<<setw(25)<<"abe"<<setw(25)<<"disNextJunction"<<setw(25)<<"angleRad"<<setw(25)<<"Hash"<<endl;
+    EV<<"ArrivalTime"<<setw(20)<<"Id_Vehicle"<<setw(15)<<"Speed"<<setw(15)<<"CoordX"<<setw(15)<<"CoordY"<<setw(15)<<"Distance"<<setw(25)<<"idleTime"<<setw(25)<<"abe"<<setw(25)<<"disNextJunction"<<setw(25)<<"angleRad"<<endl;
     while(curr != NULL)
     {
-        EV<<curr->source_hash<<setw(5)<<curr->time<<setw(15)<<curr->idVehicle<<setw(15)<<curr->s<<setw(15)<<curr->pX<<setw(15)<<curr->pY<<setw(15)<<curr->disToSource<<setw(25)<<curr->idleTime<<setw(25)<<curr->abe<<setw(25)<<curr->disJunction<<setw(25)<<curr->angle<<setw(25)<<curr->hash<<endl;
+        EV<<curr->time<<setw(15)<<curr->idVehicle<<setw(15)<<curr->s<<setw(15)<<curr->pX<<setw(15)<<curr->pY<<setw(15)<<curr->disToSource<<setw(25)<<curr->idleTime<<setw(25)<<curr->abe<<setw(25)<<curr->disJunction<<setw(25)<<curr->angle<<endl;
         curr = curr->next;
 
     }
     EV<<"----------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
-    //EV<<curr->hash;
+
 }
 
 
@@ -140,11 +136,10 @@ void BeaconList::UpdateBeacon(int b_idMsg, simtime_t b_time, simtime_t b_timeRx,
             double b_disJunction, double b_disToSource, simtime_t b_idleTime, double b_abe, double b_angle){
     beaconPtr n = new beacon;
     n =head;
-    string txt;
 
     while(n != NULL)
     {
-        txt=to_string(b_idMsg)+to_string(b_idVehicle)+to_string(b_s) +to_string(b_pX)+to_string(b_pY)+to_string(b_pZ)+to_string(b_disJunction)+to_string(b_disToSource)+to_string(b_abe)+to_string(b_angle);
+
         if(n->idVehicle == b_idVehicle)
         {
             n->idMsg=b_idMsg;
@@ -160,7 +155,6 @@ void BeaconList::UpdateBeacon(int b_idMsg, simtime_t b_time, simtime_t b_timeRx,
             n->idleTime= b_idleTime;
             n->abe=b_abe;
             n->angle=b_angle;
-            n->hash=hash<string>{}(txt);
             return;
         }
         else

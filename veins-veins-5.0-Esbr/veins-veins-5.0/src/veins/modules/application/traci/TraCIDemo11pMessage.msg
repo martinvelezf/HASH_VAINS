@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 David Eckhoff <david.eckhoff@fau.de>
+// Copyright (C) 2011 David Eckhoff <eckhoff@cs.fau.de>
 //
 // Documentation for these modules is at http://veins.car2x.org/
 //
@@ -20,22 +20,22 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-package org.car2x.veins.modules.application.traci;
-import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
+cplusplus {{
+#include "veins/base/utils/Coord.h"
+#include "veins/modules/messages/BaseFrame1609_4_m.h"
+#include "veins/base/utils/SimpleAddress.h"
+}}
 
-//
-// network description file for your Veins Application. Add parameters here
-//
-simple MyVehicle11p extends DemoBaseApplLayer
-{
-    @class(veins::MyVehicle11p);
-    string appName = default("My first Veins App!");
-    //  Add parameters here
-    //configurable variables in omnetpp.ini
-    int counterThreshold = default(3);
-    int indexOfAccidentNode = default(0);
-    
-    @signal[arrival](type="long");
-    @statistic[hopCount](title="hop count"; source="arrival"; record=vector,stats; interpolationmode=none);
-    
+namespace veins;
+
+class BaseFrame1609_4;
+class noncobject Coord;
+class LAddress::L2Type extends void;
+
+packet TraCIDemo11pMessage extends BaseFrame1609_4 {
+    string demoData;
+    LAddress::L2Type senderAddress = -1;
+    int serial = 0;
+    Coord senderPos;
+    Coord senderSpeed;
 }

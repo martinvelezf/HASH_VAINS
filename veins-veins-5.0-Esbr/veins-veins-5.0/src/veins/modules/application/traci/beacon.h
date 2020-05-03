@@ -27,7 +27,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <string>
 //#include "veins/modules/application/traci/beacon.h"
 
 using namespace std;
@@ -36,7 +35,6 @@ using namespace std;
 class BeaconList {
 private:
     typedef struct beacon {
-            size_t source_hash;
             int idMsg;
             simtime_t time=0;
             simtime_t timeRx=0;
@@ -50,11 +48,9 @@ private:
             simtime_t idleTime=0;
             double abe=0;
             double angle=0;
-            size_t hash;
             // self messages for timers
             cMessage *beaconStartMsg;  ///< start of each beacon
             beacon* next;
-
 
     }* beaconPtr;
 
