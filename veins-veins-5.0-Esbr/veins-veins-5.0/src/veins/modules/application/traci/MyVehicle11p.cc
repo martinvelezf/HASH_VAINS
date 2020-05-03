@@ -28,6 +28,26 @@
 using namespace veins;
 
 Define_Module(veins::MyVehicle11p);
+///Revisar HASH de la entrada
+       /*
+       size_t hash=bsm->getHash();
+
+       bsm->setHash();
+
+       std::cout<<"Primer Hash: "<<hash<<"  position: "<<bsm->getTxt()<<"\n";
+       bsm->getSenderPos().x<<","<<bsm->getSenderPos().y<<"\n";
+
+       if (hash==bsm->getHash())
+           std::cout<<"True";
+       else
+           std::cout<<" bsm "<<bsm->getHash()<<" texto: "<<bsm->getTxt()<<" \n";
+           //std::cout<<"  position "<<bsm->getSenderPos().x<<","<<bsm->getSenderPos().y<<"\n";
+
+      sendDelayedDown(wsm->dup(), 2 + uniform(0.01, 0.2));
+
+       */
+
+ ///////////////////////////////////////////////////////////////
 
 void MyVehicle11p::initialize(int stage)
 {
