@@ -20,39 +20,25 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "veins/modules/application/traci/MyVehicle11p.h"
+#include "veins/modules/application/traci/MITM.h"
 
 
 
 
 using namespace veins;
 
-Define_Module(veins::MyVehicle11p);
-///Revisar HASH de la entrada
-       /*
-       size_t hash=bsm->getHash();
+Define_Module(veins::MITM);
 
-       bsm->setHash();
-
-       std::cout<<"Primer Hash: "<<hash<<"  position: "<<bsm->getTxt()<<"\n";
-       bsm->getSenderPos().x<<","<<bsm->getSenderPos().y<<"\n";
-
-       if (hash==bsm->getHash())
-           std::cout<<"True";
-       else
-           std::cout<<" bsm "<<bsm->getHash()<<" texto: "<<bsm->getTxt()<<" \n";
-           //std::cout<<"  position "<<bsm->getSenderPos().x<<","<<bsm->getSenderPos().y<<"\n";
-
-      sendDelayedDown(wsm->dup(), 2 + uniform(0.01, 0.2));
-
-       */
 
  ///////////////////////////////////////////////////////////////
 
-void MyVehicle11p::initialize(int stage)
+void MITM::initialize(int stage)
 {
+    findHost()->getDisplayString().setTagArg("i", 1, "red");
     DemoBaseApplLayer::initialize(stage);
     if (stage == 0) {
+
+
         // Initializing members and pointers of your application goes here
         EV << "Initializing " << par("appName").stringValue() << std::endl;
 
@@ -83,13 +69,13 @@ void MyVehicle11p::initialize(int stage)
 
 }
 
-void MyVehicle11p::finish()
+void MITM::finish()
 {
     DemoBaseApplLayer::finish();
     // statistics recording goes here
 }
 
-void MyVehicle11p::onBSM(DemoSafetyMessage* bsm)
+void MITM::onBSM(DemoSafetyMessage* bsm)
 {
 
     DemoSafetyMessage* wsmBeacon = check_and_cast<DemoSafetyMessage*>(bsm);
@@ -124,15 +110,15 @@ void MyVehicle11p::onBSM(DemoSafetyMessage* bsm)
 
 }
 
-void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
+void MITM::onWSM(BaseFrame1609_4* frame)
 {
     // Your application has received a data message from another car or RSU
     // code for handling the message goes here, see TraciDemo11p.cc for examples
 
     TraCIDemo11pMessage* wsm = check_and_cast<TraCIDemo11pMessage*>(frame);
-    std::cerr<<"HASH "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" Demo data "<<wsm->getDemoData()<<"\n";
+    std::cerr<<"HASH "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" psid "<<wsm->getPsid()<<"\n";
     // add the new message to storage
-    wsm->setPsid(2);
+    wsm->setPsid(3);
     contador++;
     emit(arrivalSignal, contador);
 
@@ -156,21 +142,22 @@ void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
 
 }
 
-void MyVehicle11p::onWSA(DemoServiceAdvertisment* wsa)
+void MITM::onWSA(DemoServiceAdvertisment* wsa)
 {
     // Your application has received a service advertisement from another car or RSU
     // code for handling the message goes here, see TraciDemo11p.cc for examples
 }
 
-void MyVehicle11p::handleSelfMsg(cMessage* msg)
+void MITM::handleSelfMsg(cMessage* msg)
 {
     //DemoBaseApplLayer::handleSelfMsg(msg);
     // this method is for self messages (mostly timers)
     // it is important to call the DemoBaseApplLayer function for BSM and WSM transmission
 
     if (TraCIDemo11pMessage* wsm = dynamic_cast<TraCIDemo11pMessage*>(msg)) {
-
-
+        wsm->setPsid(5);
+        wsm->setHash();
+        std::cerr<<"creado en handle HASH "<<wsm->getHash()<<"\n";
 
         // if the number of times a warning message is received exceeds the counterThreshold
         // configuration variable, do not rebroadcast.
@@ -196,7 +183,7 @@ void MyVehicle11p::handleSelfMsg(cMessage* msg)
 
 }
 
-void MyVehicle11p::handlePositionUpdate(cObject* obj)
+void MITM::handlePositionUpdate(cObject* obj)
 {
     DemoBaseApplLayer::handlePositionUpdate(obj);
     // the vehicle has moved. Code that reacts to new positions goes here.
@@ -213,10 +200,9 @@ void MyVehicle11p::handlePositionUpdate(cObject* obj)
             TraCIDemo11pMessage* wsm = new TraCIDemo11pMessage();
             populateWSM(wsm);
             wsm->setDemoData(mobility->getRoadId().c_str());
-
-            ////////////////////HASH/////////////////////
+            ////////////////////////HASH//////////////////////////////
             wsm->setHash();
-            std::cerr<<"HASH "<<wsm->getHash()<<" Demo data "<<wsm->getDemoData()<<"\n";
+            std::cerr<<"HASH "<<wsm->getHash()<<"\n";
             // host is standing still due to crash
             // send right away on CCH, because channel switching is disabled
                 sendDown(wsm);
