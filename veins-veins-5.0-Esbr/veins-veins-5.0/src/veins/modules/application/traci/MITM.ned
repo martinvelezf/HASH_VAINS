@@ -28,7 +28,7 @@ import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 //
 simple MITM extends DemoBaseApplLayer
 {
-    @class(veins::MyVehicle11p);
+    @class(veins::MITM);
     string appName = default("My first Veins App!");
     //  Add parameters here
     //configurable variables in omnetpp.ini
@@ -43,5 +43,8 @@ simple MITM extends DemoBaseApplLayer
 
     @signal[beaconReceivedSignal](type=long);
     @statistic[beaconReceivedSignal](record=count,vector; description="Beacon Message Received");
+    
+    @signal[corruptedMsgSignal](type=long);
+    @statistic[corruptedMsgSignal](record=count,vector; description="Corrupted Msg");
     
 }

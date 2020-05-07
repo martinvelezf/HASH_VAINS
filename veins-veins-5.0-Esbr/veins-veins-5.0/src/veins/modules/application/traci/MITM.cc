@@ -34,11 +34,11 @@ Define_Module(veins::MITM);
 
 void MITM::initialize(int stage)
 {
-    findHost()->getDisplayString().setTagArg("i", 1, "red");
+
     DemoBaseApplLayer::initialize(stage);
     if (stage == 0) {
 
-
+        findHost()->getDisplayString().setTagArg("i", 1, "yellow");
         // Initializing members and pointers of your application goes here
         EV << "Initializing " << par("appName").stringValue() << std::endl;
 
@@ -60,6 +60,9 @@ void MITM::initialize(int stage)
         counterBeaconReceived=0;
         counterWarningReceived=0;
         WATCH(contador);
+
+
+        corruptedMsgSignal = registerSignal("beaconReceivedSignal");
 
 
     }
@@ -116,23 +119,26 @@ void MITM::onWSM(BaseFrame1609_4* frame)
     // code for handling the message goes here, see TraciDemo11p.cc for examples
 
     TraCIDemo11pMessage* wsm = check_and_cast<TraCIDemo11pMessage*>(frame);
-    std::cerr<<"HASH "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" psid "<<wsm->getPsid()<<"\n";
-    // add the new message to storage
+
+
+    ///Modifcamos erl mensaje
     wsm->setPsid(3);
+    wsm->setDemoData(mobility->getRoadId().c_str()); //modifica el mensaje
+    std::cerr<<"HASH MITM "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" psid "<<wsm->getPsid()<<"\n";
+    // add the new message to storage
+
     contador++;
     emit(arrivalSignal, contador);
-
+    wsm->setSerial(50);
     counterWarningReceived++;
     emit(warningReceivedSignal, counterWarningReceived);
+    corruptedMsg++;
+    emit(corruptedMsgSignal, corruptedMsg);
 
-       findHost()->getDisplayString().setTagArg("i", 1, "blue");
-
-       if (mobility->getRoadId()[0] != ':') traciVehicle->changeRoute(wsm->getDemoData(), 9999);
-       if (!sentMessage) {
+    if (mobility->getRoadId()[0] != ':') traciVehicle->changeRoute(wsm->getDemoData(), 9999);
+    if (!sentMessage) {
            sentMessage = true;
-           // repeat the received traffic update once in 2 seconds plus some random delay
            wsm->setSenderAddress(myId);
-           wsm->setSerial(3);
 
         //   EV << ">>>>>>>>>>RECIBI WSM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<< receivedMessages.size() <<std::endl;
           scheduleAt(simTime() + 2 + uniform(0.01, 0.2), wsm->dup());
@@ -150,25 +156,13 @@ void MITM::onWSA(DemoServiceAdvertisment* wsa)
 
 void MITM::handleSelfMsg(cMessage* msg)
 {
-    //DemoBaseApplLayer::handleSelfMsg(msg);
-    // this method is for self messages (mostly timers)
-    // it is important to call the DemoBaseApplLayer function for BSM and WSM transmission
+     if (TraCIDemo11pMessage* wsm = dynamic_cast<TraCIDemo11pMessage*>(msg)) {
 
-    if (TraCIDemo11pMessage* wsm = dynamic_cast<TraCIDemo11pMessage*>(msg)) {
-        wsm->setPsid(5);
-        wsm->setHash();
-        std::cerr<<"creado en handle HASH "<<wsm->getHash()<<"\n";
-
-        // if the number of times a warning message is received exceeds the counterThreshold
-        // configuration variable, do not rebroadcast.
-
-          if (contador <= (uint)counterThreshold) {
+       if (contador <= (uint)counterThreshold) {
               findHost()->getDisplayString().setTagArg("i", 1, "green");
               sendDown(wsm->dup());
-            //  scheduleAt(simTime() + 1, wsm);
           }
           else{
-              // stop service advertisements
                            stopService();
                            delete (wsm);
           }

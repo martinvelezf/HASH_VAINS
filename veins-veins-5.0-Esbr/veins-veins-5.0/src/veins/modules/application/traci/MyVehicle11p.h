@@ -60,6 +60,9 @@ protected:
     int contador;
     int counterBeaconReceived;
     int counterWarningReceived;
+
+
+
     BeaconList ListBeacon;
 
     simtime_t lastDroveAt;
@@ -71,6 +74,12 @@ protected:
     simsignal_t arrivalSignal;
     simsignal_t beaconReceivedSignal;
     simsignal_t warningReceivedSignal;
+
+    int preventMsg=0;
+    int MTIM=0;
+    int prevent;
+    simsignal_t preventMsgSignal;
+    simsignal_t MTIMSignal;
 
     map<long,TraCIDemo11pMessages> receivedMessages;    // treeId, onWSM vector
 

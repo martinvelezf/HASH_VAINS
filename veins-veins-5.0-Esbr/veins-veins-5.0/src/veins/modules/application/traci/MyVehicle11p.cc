@@ -28,26 +28,6 @@
 using namespace veins;
 
 Define_Module(veins::MyVehicle11p);
-///Revisar HASH de la entrada
-       /*
-       size_t hash=bsm->getHash();
-
-       bsm->setHash();
-
-       std::cout<<"Primer Hash: "<<hash<<"  position: "<<bsm->getTxt()<<"\n";
-       bsm->getSenderPos().x<<","<<bsm->getSenderPos().y<<"\n";
-
-       if (hash==bsm->getHash())
-           std::cout<<"True";
-       else
-           std::cout<<" bsm "<<bsm->getHash()<<" texto: "<<bsm->getTxt()<<" \n";
-           //std::cout<<"  position "<<bsm->getSenderPos().x<<","<<bsm->getSenderPos().y<<"\n";
-
-      sendDelayedDown(wsm->dup(), 2 + uniform(0.01, 0.2));
-
-       */
-
- ///////////////////////////////////////////////////////////////
 
 void MyVehicle11p::initialize(int stage)
 {
@@ -66,10 +46,18 @@ void MyVehicle11p::initialize(int stage)
         // configurable variables in omnetpp.ini
         indexOfAccidentNode = par("indexOfAccidentNode").intValue();
         counterThreshold = par("counterThreshold").intValue();
+
         arrivalSignal = registerSignal("arrival");
 
         beaconReceivedSignal = registerSignal("beaconReceivedSignal");
         warningReceivedSignal = registerSignal("warningReceivedSignal");
+
+        ///////////////////////Valores para prevent false beacon////////////////
+        preventMsgSignal = registerSignal("beaconReceivedSignal");
+        MTIMSignal = registerSignal("beaconReceivedSignal");
+        //prevent = par("prevent").intValue();
+
+
         contador=0;
         counterBeaconReceived=0;
         counterWarningReceived=0;
@@ -130,7 +118,7 @@ void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
     // code for handling the message goes here, see TraciDemo11p.cc for examples
 
     TraCIDemo11pMessage* wsm = check_and_cast<TraCIDemo11pMessage*>(frame);
-    std::cerr<<"HASH "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" Demo data "<<wsm->getDemoData()<<"\n";
+    std::cerr<<"HASH "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" Demo data "<<wsm->getDemoData()<<" Serial "<<wsm->getSerial()<<"\n";
     // add the new message to storage
     wsm->setPsid(2);
     contador++;
@@ -139,6 +127,17 @@ void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
     counterWarningReceived++;
     emit(warningReceivedSignal, counterWarningReceived);
 
+    if(wsm->compareHash()==false){
+        MTIM++;
+        emit(MTIMSignal, MTIM);
+    }
+
+    if(prevent && wsm->compareHash()==false ){
+        preventMsg++;
+        emit(preventMsgSignal, preventMsg);
+    }
+    else{
+
        findHost()->getDisplayString().setTagArg("i", 1, "blue");
 
        if (mobility->getRoadId()[0] != ':') traciVehicle->changeRoute(wsm->getDemoData(), 9999);
@@ -146,13 +145,13 @@ void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
            sentMessage = true;
            // repeat the received traffic update once in 2 seconds plus some random delay
            wsm->setSenderAddress(myId);
-           wsm->setSerial(3);
+           //wsm->setSerial(3);
 
         //   EV << ">>>>>>>>>>RECIBI WSM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<< receivedMessages.size() <<std::endl;
           scheduleAt(simTime() + 2 + uniform(0.01, 0.2), wsm->dup());
 
        }
-
+    }
 
 }
 
@@ -216,10 +215,11 @@ void MyVehicle11p::handlePositionUpdate(cObject* obj)
 
             ////////////////////HASH/////////////////////
             wsm->setHash();
-            std::cerr<<"HASH "<<wsm->getHash()<<" Demo data "<<wsm->getDemoData()<<"\n";
+            wsm->setSerial(100);
+            std::cerr<<"HASH "<<wsm->getHash()<<" Demo data "<<wsm->getDemoData()<<" Serial "<<wsm->getSerial()<<"\n";
             // host is standing still due to crash
             // send right away on CCH, because channel switching is disabled
-                sendDown(wsm);
+            sendDown(wsm);
 
         }
     }

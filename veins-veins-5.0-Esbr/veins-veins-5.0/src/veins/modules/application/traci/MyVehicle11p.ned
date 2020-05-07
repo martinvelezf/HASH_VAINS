@@ -34,6 +34,7 @@ simple MyVehicle11p extends DemoBaseApplLayer
     //configurable variables in omnetpp.ini
     int counterThreshold = default(3);
     int indexOfAccidentNode = default(0);
+    int prevent=default(0);
     
     @signal[arrival](type="long");
     @statistic[hopCount](title="hop count"; source="arrival"; record=vector,stats; interpolationmode=none);
@@ -44,4 +45,9 @@ simple MyVehicle11p extends DemoBaseApplLayer
     @signal[beaconReceivedSignal](type=long);
     @statistic[beaconReceivedSignal](record=count,vector; description="Beacon Message Received");
     
+    @signal[preventMsgSignal](type=long);
+    @statistic[preventMsgSignal](record=count,vector; description="Avoid corrupted Msg");
+    
+    @signal[MITMSignal](type=long);
+    @statistic[MITMSignal](record=count,vector; description="MITM Msg");
 }
