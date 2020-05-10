@@ -56,13 +56,14 @@ void MITM::initialize(int stage)
 
         beaconReceivedSignal = registerSignal("beaconReceivedSignal");
         warningReceivedSignal = registerSignal("warningReceivedSignal");
+        corruptedMsgGenerateSignal=registerSignal("corruptedMsgGenerateSignal");
         contador=0;
         counterBeaconReceived=0;
         counterWarningReceived=0;
         WATCH(contador);
 
 
-        corruptedMsgSignal = registerSignal("beaconReceivedSignal");
+        corruptedMsgSignal = registerSignal("corruptedMsgSignal");
 
 
     }
@@ -75,7 +76,9 @@ void MITM::initialize(int stage)
 void MITM::finish()
 {
     DemoBaseApplLayer::finish();
+
     // statistics recording goes here
+    cout<<getParentModule()->getIndex()<<"corrupted "<<corruptedMsg<<" corruptedMsgGenerate "<<corruptedMsgGenerate<<"\n";
 }
 
 void MITM::onBSM(DemoSafetyMessage* bsm)
@@ -121,29 +124,29 @@ void MITM::onWSM(BaseFrame1609_4* frame)
     TraCIDemo11pMessage* wsm = check_and_cast<TraCIDemo11pMessage*>(frame);
 
 
-    ///Modifcamos erl mensaje
-    wsm->setPsid(3);
+
     wsm->setDemoData(mobility->getRoadId().c_str()); //modifica el mensaje
     std::cerr<<"HASH MITM "<<wsm->getHash()<<" compare "<<wsm->compareHash()<<" psid "<<wsm->getPsid()<<"\n";
     // add the new message to storage
-
-    contador++;
-    emit(arrivalSignal, contador);
-    wsm->setSerial(50);
-    counterWarningReceived++;
-    emit(warningReceivedSignal, counterWarningReceived);
     corruptedMsg++;
     emit(corruptedMsgSignal, corruptedMsg);
 
+    contador++;
+    emit(arrivalSignal, contador);
+
+    counterWarningReceived++;
+    emit(warningReceivedSignal, counterWarningReceived);
+
+
     if (mobility->getRoadId()[0] != ':') traciVehicle->changeRoute(wsm->getDemoData(), 9999);
-    if (!sentMessage) {
+    //if (!sentMessage) {
            sentMessage = true;
            wsm->setSenderAddress(myId);
 
         //   EV << ">>>>>>>>>>RECIBI WSM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<< receivedMessages.size() <<std::endl;
-          scheduleAt(simTime() + 2 + uniform(0.01, 0.2), wsm->dup());
+          scheduleAt(simTime() + uniform(0.01, 0.2), wsm->dup());
 
-       }
+       //}
 
 
 }
@@ -156,11 +159,18 @@ void MITM::onWSA(DemoServiceAdvertisment* wsa)
 
 void MITM::handleSelfMsg(cMessage* msg)
 {
+
      if (TraCIDemo11pMessage* wsm = dynamic_cast<TraCIDemo11pMessage*>(msg)) {
 
+
        if (contador <= (uint)counterThreshold) {
-              findHost()->getDisplayString().setTagArg("i", 1, "green");
-              sendDown(wsm->dup());
+           ///Modifacamos erl mensaje
+           wsm->setPsid(3);
+           wsm->setSerial(50);
+           corruptedMsgGenerate++;
+            emit(corruptedMsgGenerateSignal,corruptedMsgGenerate);
+            findHost()->getDisplayString().setTagArg("i", 1, "red");
+            sendDown(wsm->dup());
           }
           else{
                            stopService();
@@ -182,7 +192,6 @@ void MITM::handlePositionUpdate(cObject* obj)
     DemoBaseApplLayer::handlePositionUpdate(obj);
     // the vehicle has moved. Code that reacts to new positions goes here.
     // member variables such as currentPosition and currentSpeed are updated in the parent class
-
     // stopped for for at least 10s?
     if (mobility->getSpeed() < 1) {
         if (simTime() - lastDroveAt >= 10 && sentMessage == false && indexOfAccidentNode == getParentModule()->getIndex()) {

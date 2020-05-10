@@ -77,7 +77,7 @@ protected:
 
     int preventMsg=0;
     int MTIM=0;
-    int prevent;
+    bool prevent;
     simsignal_t preventMsgSignal;
     simsignal_t MTIMSignal;
 

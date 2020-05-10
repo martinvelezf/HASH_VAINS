@@ -38,7 +38,7 @@ simple DemoBaseApplLayer like IBaseApplLayer
     parameters:
         @class(veins::DemoBaseApplLayer);
         int headerLength = default(88bit) @unit(bit); //header length of the application
-
+		
         bool sendBeacons = default(true); //tell the applayer to periodically send beacons
         int beaconLengthBits = default(256bit) @unit(bit); //the length of a beacon packet
         int beaconUserPriority = default(7); //the user priority (UP) of the beacon messages
@@ -54,6 +54,18 @@ simple DemoBaseApplLayer like IBaseApplLayer
         int wsaLengthBits = default(250bit) @unit(bit);
         double wsaInterval =  default(1s) @unit(s);
 
+    @signal[corruptedMsgSignal](type=long);
+    @statistic[corruptedMsgSignal](record=count,vector; description="Corrupted Msg");
+    @signal[preventMsgSignal](type=long);
+    @statistic[preventMsgSignal](record=count,vector; description="Avoid corrupted Msg");
+    
+    @signal[corruptedMsgGenerateSignal](type=long);
+    @statistic[corruptedMsgGenerateSignal](record=count,vector; description="Corrupted Msg Genrate");
+    
+    @signal[MTIMSignal](type=long);
+    @statistic[MTIMSignal](record=count,vector; description="MITM Msg");
+
+		bool prevent= default(false);
     gates:
         input lowerLayerIn; // from mac layer
         output lowerLayerOut; // to mac layer

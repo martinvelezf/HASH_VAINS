@@ -49,6 +49,8 @@ void DemoBaseApplLayer::initialize(int stage)
         ASSERT(mac);
 
         // read parameters
+
+
         headerLength = par("headerLength");
         sendBeacons = par("sendBeacons").boolValue();
         beaconLengthBits = par("beaconLengthBits");

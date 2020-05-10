@@ -75,7 +75,9 @@ protected:
     simsignal_t warningReceivedSignal;
 
     int corruptedMsg=0;
+    int corruptedMsgGenerate=0;
     simsignal_t corruptedMsgSignal;
+    simsignal_t corruptedMsgGenerateSignal;
 
     map<long,TraCIDemo11pMessages> receivedMessages;    // treeId, onWSM vector
 

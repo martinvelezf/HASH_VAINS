@@ -53,10 +53,10 @@ void MyVehicle11p::initialize(int stage)
         warningReceivedSignal = registerSignal("warningReceivedSignal");
 
         ///////////////////////Valores para prevent false beacon////////////////
-        preventMsgSignal = registerSignal("beaconReceivedSignal");
-        MTIMSignal = registerSignal("beaconReceivedSignal");
-        //prevent = par("prevent").intValue();
+        preventMsgSignal = registerSignal("preventMsgSignal");
+        MTIMSignal = registerSignal("MTIMSignal");
 
+        prevent = par("prevent").boolValue();
 
         contador=0;
         counterBeaconReceived=0;
@@ -74,6 +74,7 @@ void MyVehicle11p::initialize(int stage)
 void MyVehicle11p::finish()
 {
     DemoBaseApplLayer::finish();
+     cout<<getParentModule()->getIndex()<<" MITM "<<MTIM <<" Prevent "<<preventMsg<<"\n";
     // statistics recording goes here
 }
 
@@ -140,7 +141,7 @@ void MyVehicle11p::onWSM(BaseFrame1609_4* frame)
 
        findHost()->getDisplayString().setTagArg("i", 1, "blue");
 
-       if (mobility->getRoadId()[0] != ':') traciVehicle->changeRoute(wsm->getDemoData(), 9999);
+       //if (mobility->getRoadId()[0] != ':') traciVehicle->changeRoute(wsm->getDemoData(), 9999);
        if (!sentMessage) {
            sentMessage = true;
            // repeat the received traffic update once in 2 seconds plus some random delay

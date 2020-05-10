@@ -8,6 +8,16 @@ library(tidyverse)
 setwd("~/Desktop/exportData/results-40vkm2")
 #################################################
 
+filterCSV<-function(name,rep){
+  counterHopsMsgRx <- rep(0,rep)
+  for (i in 0:rep){
+    x0 <- read.csv(file =paste(name,'-',as.character(i),".csv"))
+    x0 <- x0 %>% filter(name == "hopCount:stats")
+    x0 <- x0 %>% filter(!is.na(max))
+    vec[i+1] <- as.numeric(max(x0 %>% select(max)))
+    
+  }
+}
 
 
 x0 <- read.csv(file = 'Flooding-0.csv')

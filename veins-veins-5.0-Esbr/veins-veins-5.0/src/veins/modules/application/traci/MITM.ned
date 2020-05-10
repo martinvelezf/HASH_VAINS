@@ -44,7 +44,6 @@ simple MITM extends DemoBaseApplLayer
     @signal[beaconReceivedSignal](type=long);
     @statistic[beaconReceivedSignal](record=count,vector; description="Beacon Message Received");
     
-    @signal[corruptedMsgSignal](type=long);
-    @statistic[corruptedMsgSignal](record=count,vector; description="Corrupted Msg");
+    
     
 }
