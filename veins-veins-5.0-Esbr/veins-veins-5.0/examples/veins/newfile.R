@@ -31,40 +31,37 @@ filterCSVparam<-function(name,rep,attr){
   }
   return(Data)
 }
-getResults<-function(name,attr,rep){
-  n=length(attr)
+getResults<-function(name,rep){
+  n=3
+  attr=c("MTIMSignal:count","warningReceivedSignal:count","preventMsgSignal:count","corruptedMsgGenerateSignal:count","generatedWSMs")
   Data<- matrix(rep(0,10*n),ncol=n)
   Data1<- matrix(rep(0,10*n),ncol=n)
   Data2<- matrix(rep(0,10*n),ncol=n)
   rownames(Data)<-c(0:9*10)
-  colnames(Data)<-attr
-  rownames(Data1)<-c(0:9*10)
-  colnames(Data1)<-attr
-  rownames(Data2)<-c(0:9*10)
-  colnames(Data2)<-attr
+  colnames(Data)<-c("Relation of the mean corrupted message","Porcentaje of mean mitm messaje detected")
+  colnames(Data1)<-c("Relation of the mean corrupted message","Porcentaje of min mitm messaje detected")
+  colnames(Data2)<-c("Relation of the mean corrupted message","Porcentaje of max mitm messaje detected")
   for(i in 0:9){
     file=paste(name,as.character(i*10),sep='')
     print(file)
     data=filterCSVparam(file,rep,attr)
-    for(j in 1:n){
-      Data[i+1,j]=mean(data[,j])
-      Data1[i+1,j]=min(data[,j])
-      Data2[i+1,j]=max(data[,j])
-    }
+    
+      Data[i+1,1]=mean(data[,1]/data[,2])
+      Data1[i+1,1]=min(data[,1]/data[,2])
+      Data2[i+1,1]=max(data[,1]/data[,2])
+      
+      Data[i+1,2]=mean(data[,3]/data[,2])
+      Data1[i+1,2]=min(data[,3]/data[,2])
+      Data2[i+1,2]=max(data[,3]/data[,2])
   }
   return(data.frame(Data,Data1,Data2))
 }
-
+%numero de  mesnajes corruptos corruptedMsgSignal:count%
 name1="results/PreventMITM"
-attr1=c("MTIMSignal:count","corruptedMsgSignal:count","warningReceivedSignal:count","preventMsgSignal:count","corruptedMsgGenerateSignal:count","generatedWSMs")
+R=getResults(name1,10)
 
-R=getResults(name1,attr1,10)
 hash=(0:9)*10
-meanmitm=R[1]/R[3]
-maxmitm=R[7]/R[9]
-minmitm=R[13]/R[15]
 
-detected=R[,4]/R[,1]
 Results=data.frame(hash,minmitm,maxmitm,meanmitm)
 
 Results%>%
