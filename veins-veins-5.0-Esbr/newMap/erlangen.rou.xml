@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on Fri May 15 22:48:31 2020 by Eclipse SUMO duarouter Version 1.2.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="erlangen.net.xml"/>
+        <route-files value="trips.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="erlangen.rou.xml"/>
+        <alternatives-output value="erlangen.rou.alt.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="2.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vehicle id="0" depart="0.00">
+        <route edges="5671693#0 5671693#1 420499932#0 420499932#1 46520833#2 46520833#3 195743343#1 588168464 464515614#0 464515614#1 464515614#2 464515614#3 5670296#0 5670296#1 5670296#2 5670296#3 5670296#4 420598330#0 420598330#1"/>
+    </vehicle>
+    <vehicle id="1" depart="0.00">
+        <route edges="46522005 700951339 46481747#2 46481747#3 46522006#0 46522006#1 458166892#0 458166892#1 195743343#0 195743343#1 588168464 464515614#0 464515614#1 464515614#2 464515614#3 587061854 68668552#0 68668552#1 5672965#0"/>
+    </vehicle>
+</routes>
